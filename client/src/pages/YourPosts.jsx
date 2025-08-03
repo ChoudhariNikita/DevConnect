@@ -17,11 +17,12 @@ export default function YourPosts() {
   const [postToDelete, setPostToDelete] = useState(null);
 
   const token = localStorage.getItem("token");
+  const api = import.meta.env.VITE_API_URL;
 
   // Fetch user's posts from backend
   useEffect(() => {
     axios
-      .get(`/api/users/${user._id}/posts`, {
+      .get(`${api}/api/users/${user._id}/posts`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setPosts(res.data));
@@ -32,7 +33,7 @@ export default function YourPosts() {
   if (!newPost.trim()) return;
 
   const res = await axios.post(
-    "/api/posts/create",
+    `${api}/api/posts/create`,
     { author: user._id, content: newPost },
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -59,7 +60,7 @@ export default function YourPosts() {
 
   const handleUpdatePost = async (postId) => {
     const res = await axios.put(
-      `/api/posts/${postId}`,
+      `${api}/api/posts/${postId}`,
       { content: editContent },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -69,7 +70,7 @@ export default function YourPosts() {
   };
 
   const handleDeletePost = async (postId) => {
-    await axios.delete(`/api/posts/${postId}`, {
+    await axios.delete(`${api}/api/posts/${postId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setPosts(posts.filter((p) => p._id !== postId));

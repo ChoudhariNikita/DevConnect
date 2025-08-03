@@ -10,9 +10,10 @@ export default function PostFeed() {
   const [posts, setPosts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(5);
   const [loading, setLoading] = useState(true);
-
+  
+  const api = import.meta.env.VITE_API_URL;
   useEffect(() => {
-    axios.get("/api/posts").then((res) => {
+    axios.get(`${api}/api/posts`).then((res) => {
       setPosts(res.data.reverse()); // newest first
       setLoading(false);
     });
@@ -22,7 +23,7 @@ export default function PostFeed() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        `/api/posts/${postId}/like`,
+        `${api}/api/posts/${postId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -17,10 +17,11 @@ export default function Profile() {
   });
 
   const token = localStorage.getItem("token");
+  const api = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const res = await axios.get("/api/users/profile", {
+      const res = await axios.get(`${api}/api/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProfile(res.data);
@@ -43,7 +44,7 @@ export default function Profile() {
   const handleSave = async () => {
     try {
       const res = await axios.post(
-        "/api/users/profile",
+        `${api}/api/users/profile`,
         {
           ...formData,
           skills: formData.skills.split(",").map((s) => s.trim()),

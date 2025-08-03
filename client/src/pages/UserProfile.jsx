@@ -8,14 +8,15 @@ export default function UserProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
+  const api = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const profileRes = await axios.get(`/api/users/${id}`);
+        const profileRes = await axios.get(`${api}/api/users/${id}`);
         setProfile(profileRes.data);
 
-        const postsRes = await axios.get(`/api/users/${id}/posts`);
+        const postsRes = await axios.get(`${api}/api/users/${id}/posts`);
         setPosts(postsRes.data);
       } catch (error) {
         console.error("Error loading user data:", error);

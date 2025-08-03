@@ -11,6 +11,7 @@ export default function Signup() {
     email: "",
     password: "",
   });
+  const api = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
 
@@ -22,7 +23,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/auth/register", formData);
+      const res = await axios.post(`${api}/api/auth/register`, formData);
       console.log("Signup successful:", res.data);
       showAlert(
       "success",
