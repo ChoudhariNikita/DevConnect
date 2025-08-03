@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import { HiOutlineSparkles } from "react-icons/hi2";
-import { FaThumbsUp } from "react-icons/fa";
 
 export default function PostFeed() {
   const { user } = useAuth();
@@ -19,10 +17,6 @@ export default function PostFeed() {
   }, []);
 
   const handleLike = async (postId) => {
-    if (!user) {
-      alert("Please log in to like posts and enjoy the community!");
-      return;
-    }
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
@@ -37,8 +31,9 @@ export default function PostFeed() {
             : post
         )
       );
-    } catch (err) {
-      alert("Could not like post");
+    } catch (error) {
+      console.error("Error liking post:", error);
+      showAlert("error", "Like Failed", "An error occurred while liking the post.");
     }
   };
 
@@ -110,26 +105,34 @@ export default function PostFeed() {
                     <p className="mb-3">{post.content}</p>
                     {/* Post Stats */}
                     <div className="border-top pt-3">
-                      <div className="d-flex justify-content-between align-items-center text-muted small mb-3">
-                        <span>{post.likes} likes</span>
-                      </div>
-                      {/* Like Button Only */}
-                      <div className="d-flex justify-content-start">
+                      <div className="d-flex justify-content-between align-items-center">
+                        {/* Left: Likes Count */}
+                        <span className="text-muted small">
+                          {post.likes} likes
+                        </span>
+
+                        {/* Right: Like Button */}
                         <button
                           className={`btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill border ${
-                            post.liked
+                            post.liked && user
                               ? "border-primary text-primary bg-light"
                               : "border-light text-muted bg-white"
                           }`}
                           onClick={() => handleLike(post._id)}
-                          style={{ transition: "all 0.2s ease-in-out !important" }}
+                          title={
+                            !user ? "Please login to like posts" : "Like this post"
+                          }
                         >
-                          <FaThumbsUp
-                            className={`me-2 ${
-                              post.liked ? "text-primary" : "text-muted"
+                          <i
+                            className={`bi ${
+                              post.liked && user
+                                ? "bi-hand-thumbs-up-fill"
+                                : "bi-hand-thumbs-up"
+                            } me-2 ${
+                              post.liked && user ? "text-primary" : "text-muted"
                             }`}
                             style={{ fontSize: "1rem" }}
-                          />
+                          ></i>
                           <span className="fw-semibold">Like</span>
                         </button>
                       </div>
@@ -153,7 +156,7 @@ export default function PostFeed() {
                 ) : (
                   posts.length > 0 && (
                     <p className="text-muted d-flex justify-content-center align-items-center gap-2">
-                      <HiOutlineSparkles size={20} className="text-primary" />
+                      <i className="bi bi-stars text-primary"></i>
                       You're all caught up!
                     </p>
                   )

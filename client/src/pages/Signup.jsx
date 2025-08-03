@@ -23,11 +23,11 @@ export default function Signup() {
     try {
       const res = await axios.post("/api/auth/register", formData);
       console.log("Signup successful:", res.data);
-      alert("Account created successfully!");
+      showAlert("success", "Signup Successful", "Account created successfully!");
       navigate("/login");
     } catch (err) {
       console.error(err);
-      alert("Signup failed!");
+      showAlert("error", "Signup Failed", "An error occurred during signup.");
     }
   };
 

@@ -125,7 +125,7 @@ export default function Navbar() {
         message="Are you sure you want to logout? You will need to log in again to access your profile and posts."
         onConfirm={confirmLogout}
         onCancel={() => setShowLogoutDialog(false)}
-        confirmText="Yes, Logout"
+        confirmText="Logout"
         cancelText="Cancel"
         confirmVariant="danger"
       />

@@ -92,93 +92,113 @@ export default function YourPosts() {
                   <Button
                     type="submit"
                     variant="primary"
-                    className="w-100"
+                    className="w-100 d-flex justify-content-center align-items-center gap-2"
                     disabled={!newPost.trim()}
-                  >
-                    Post
+                  >                    
+                    Post <i className="bi bi-send-fill"></i>
                   </Button>
                 </form>
               </div>
             </div>
+
             {/* User's Posts */}
             <div className="card shadow-sm">
               <div className="card-body">
                 <h5 className="mb-3">Your Posts</h5>
+
                 {posts.length === 0 && (
                   <p className="text-muted">You haven't posted anything yet.</p>
                 )}
+
                 {posts.map((post) => (
                   <div key={post._id} className="mb-4 border-bottom pb-3">
-                    <div className="d-flex align-items-center mb-2">
-                      <div
-                        className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                        style={{ width: 40, height: 40, fontSize: 18 }}
-                      >
-                        {user?.fullName?.[0] || "U"}
+                    <div className="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                      <div className="d-flex align-items-start gap-2">
+                        <div
+                          className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+                          style={{ width: 40, height: 40, fontSize: 18 }}
+                        >
+                          {user?.fullName?.[0] || "U"}
+                        </div>
+                        <div>
+                          <div className="fw-bold">{user?.fullName}</div>
+                          <div className="text-muted small">
+                            {new Date(post.createdAt).toLocaleDateString(
+                              undefined,
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}{" "}
+                            {new Date(post.createdAt)
+                              .toLocaleTimeString(undefined, {
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                              .replace("am", "AM")
+                              .replace("pm", "PM")}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="fw-bold">{user?.fullName}</span>
-                        <span className="text-muted ms-2 small">
-                          <br />
-                          {new Date(post.createdAt).toLocaleDateString(
-                            undefined,
-                            { year: "numeric", month: "long", day: "numeric" }
-                          )}{" "}
-                          {new Date(post.createdAt)
-                            .toLocaleTimeString(undefined, {
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
-                            .replace("am", "AM")
-                            .replace("pm", "PM")}
-                        </span>
-                      </div>
+
+                      {/* Right: Buttons */}
+                      {post.author === user._id && (
+                        <div className="d-flex mt-2 mt-md-0">
+                          <Button
+                            variant="light"
+                            size="sm"
+                            className="me-2 border"
+                            onClick={() => handleEdit(post)}
+                            title="Edit Post"
+                          >
+                            <i className="bi bi-pencil-fill text-primary"></i>
+                          </Button>
+                          <Button
+                            variant="light"
+                            size="sm"
+                            className="border"
+                            onClick={() => handleDeleteClick(post._id)}
+                            title="Delete Post"
+                          >
+                            <i className="bi bi-trash-fill text-danger"></i>
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                    <div>{post.content}</div>
-                    {post.author === user._id && (
+
+                    {/* Content Area or Edit Mode */}
+                    {editingPost === post._id ? (
                       <div className="mt-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="me-2"
-                          onClick={() => handleEdit(post)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteClick(post._id)}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    )}
-                    {editingPost === post._id && (
-                      <div className="mt-3">
                         <textarea
                           className="form-control mb-2"
                           rows={2}
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                         />
-                        <Button
-                          className="btn btn-sm btn-primary me-2"
-                          onClick={() => handleUpdatePost(post._id)}
-                        >
-                          Update
-                        </Button>
-                        <Button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => setEditingPost(null)}
-                        >
-                          Cancel
-                        </Button>
+                        <div className="d-flex gap-2">
+                          <Button
+                            className="btn-sm btn-primary"
+                            onClick={() => handleUpdatePost(post._id)}
+                          >
+                            Update
+                          </Button>
+                          <Button
+                            className="btn-sm btn-secondary"
+                            onClick={() => setEditingPost(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
+                    ) : (
+                      <div className="mt-2">{post.content}</div>
                     )}
                   </div>
                 ))}
+
+                {/* Delete Confirmation */}
                 <ConfirmDialog
                   show={showDeleteDialog}
                   title="Delete Post"
@@ -194,6 +214,7 @@ export default function YourPosts() {
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );

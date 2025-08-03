@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import Footer from "../components/Footer";
+import Swal from "sweetalert2";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -11,6 +11,21 @@ export default function Login() {
   });
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // ✅ SweetAlert Helper Function
+  const showAlert = (type, title, text) => {
+    Swal.fire({
+      icon: type,
+      title,
+      text,
+      confirmButtonText: "OK",
+      confirmButtonColor: "#0a66c2", // LinkedIn blue
+      customClass: {
+        popup: "rounded-4 shadow",
+        confirmButton: "btn btn-primary px-4",
+      },
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,28 +38,24 @@ export default function Login() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        console.log("Login successful:", data);
+        showAlert("success", "Login Successful", "Welcome back!");
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-
         login(data.user);
-        // Redirect to feed page
         navigate("/feed", { replace: true });
       } else {
-        alert(data.message || "Login failed");
+        showAlert("error", "Login Failed", data.message || "Please try again.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login");
+      showAlert("error", "Login Failed", "An error occurred during login.");
     }
   };
 
@@ -53,7 +64,7 @@ export default function Login() {
       <nav className="navbar navbar-dark bg-primary">
         <div className="container">
           <Link className="navbar-brand fw-bold fs-3" to="/">
-          <i className="bi bi-linkedin me-2"></i>
+            <i className="bi bi-linkedin me-2"></i>
             DevConnect
           </Link>
           <ul className="navbar-nav flex-row">
@@ -66,6 +77,7 @@ export default function Login() {
           </ul>
         </div>
       </nav>
+
       <div
         className="container d-flex justify-content-center align-items-center"
         style={{ minHeight: "100vh" }}
@@ -107,7 +119,7 @@ export default function Login() {
           </p>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
