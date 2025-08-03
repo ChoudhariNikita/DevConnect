@@ -1,12 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutDialog(false);
     logout();
     navigate('/login');
   };
@@ -44,7 +50,7 @@ export default function Navbar() {
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <button className="dropdown-item" onClick={handleLogout}>Logout</button>
+                    <button className="dropdown-item" onClick={handleLogoutClick}>Logout</button>
                   </li>
                 </ul>
               </li>
@@ -52,6 +58,44 @@ export default function Navbar() {
           </ul>
         </div>
       </div>
+      {showLogoutDialog && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.4)" }}
+          tabIndex={-1}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Logout</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowLogoutDialog(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to <span className="fw-bold text-danger">logout</span>?
+                  <br />
+                  You will need to log in again to access your profile and posts.
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowLogoutDialog(false)}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-danger" onClick={confirmLogout}>
+                  Yes, Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

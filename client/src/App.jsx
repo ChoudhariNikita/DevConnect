@@ -5,11 +5,12 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import PostFeed from './pages/PostFeed';
 import ProtectedRoute from './components/ProtectedRoute';
-// import Profile from './pages/Profile'; // Uncomment when you have a Profile page
+import Profile from './pages/Profile';
+import YourPosts from './pages/YourPosts';
 
 function App() {
   return (
-    <Router>
+   <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -19,11 +20,16 @@ function App() {
             <PostFeed />
           </ProtectedRoute>
         } />
-        {/* <Route path="/profile" element={
+        <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        } /> */}
+        } />
+        <Route path="/your-posts" element={
+          <ProtectedRoute>
+            <YourPosts />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );
