@@ -34,7 +34,7 @@ export default function PostFeed() {
       );
     } catch (error) {
       console.error("Error liking post:", error);
-      showAlert("error", "Like Failed", "An error occurred while liking the post.");
+      showAlert("info", "Like Failed", "You need to login before you can like a post!");
     }
   };
 

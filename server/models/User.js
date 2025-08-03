@@ -4,7 +4,13 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   fullName: String,
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+
+  // 🔽 These are "profile" fields
+  bio: { type: String, default: "" },
+  skills: { type: [String], default: [] },
+  location: { type: String, default: "" }
+
 }, { timestamps: true });
 
 // Hash password before saving

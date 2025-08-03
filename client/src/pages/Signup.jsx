@@ -51,7 +51,7 @@ export default function Signup() {
           <ul className="navbar-nav flex-row">
             <li className="nav-item">
               <Link className="nav-link text-white" to="/">
-                <i className="bi bi-house-fill me-2"></i>
+                <i className="bi bi-house me-2"></i>
                 Home
               </Link>
             </li>

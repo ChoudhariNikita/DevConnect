@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { getUserProfile, getUserPosts } = require('../controllers/userController');
+const {
+  getUserProfile,
+  getUserPosts,
+  getProfile,
+  updateProfile
+} = require('../controllers/userController');
+const authMiddleware = require("../middleware/authMiddleware");
 
-// GET user profile by ID or email
+router.get('/profile', authMiddleware, getProfile);
+router.post('/profile', authMiddleware, updateProfile);
 router.get('/:id', getUserProfile);
-
-// (Optional) GET posts by user ID
 router.get('/:id/posts', getUserPosts);
 
 module.exports = router;
