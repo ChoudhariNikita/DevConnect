@@ -4,7 +4,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import PostFeed from './pages/PostFeed';
-import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+// import Profile from './pages/Profile'; // Uncomment when you have a Profile page
 
 function App() {
   return (
@@ -13,7 +14,16 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/feed" element={<PostFeed />} />
+        <Route path="/feed" element={
+          <ProtectedRoute>
+            <PostFeed />
+          </ProtectedRoute>
+        } />
+        {/* <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } /> */}
       </Routes>
     </Router>
   );
