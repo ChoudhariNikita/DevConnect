@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -14,14 +15,22 @@ export default function Navbar() {
   const confirmLogout = () => {
     setShowLogoutDialog(false);
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
       <div className="container">
-        <Link className="navbar-brand fw-bold fs-3" to="/">DevConnect</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <Link className="navbar-brand fw-bold fs-3" to="/">
+          <i className="bi bi-linkedin me-2"></i>
+          DevConnect
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
@@ -29,35 +38,79 @@ export default function Navbar() {
             {!user && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">Login</Link>
+                  <Link
+                    className="nav-link d-flex align-items-center"
+                    to="/login"
+                  >
+                    <i className="bi bi-box-arrow-in-right me-2"></i> Login
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/signup">Sign Up</Link>
+                  <Link
+                    className="nav-link d-flex align-items-center"
+                    to="/signup"
+                  >
+                    <i className="bi bi-person-plus me-2"></i> Sign Up
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feed">Community Posts</Link>
+                  <Link className="nav-link" to="/feed">
+                    <i className="bi bi-journal-text me-2"></i>
+                    Community Posts
+                  </Link>
                 </li>
               </>
             )}
             {user && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feed">Community Posts</Link>
+                  <Link className="nav-link d-flex align-items-center" to="/feed">
+                    <i className="bi bi-journal-text me-2 fs-7"></i>
+                    Community Posts
+                  </Link>
                 </li>
                 <li className="nav-item dropdown">
-                  <button className="btn nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <span className="fw-bold">{user.fullName?.[0] || 'U'}</span>
+                  <button
+                    className="nav-link dropdown-toggle border-0 bg-transparent d-flex align-items-center"
+                    style={{ padding: "0.5rem 1rem" }}
+                    data-bs-toggle="dropdown"
+                  >
+                    <i className="bi bi-person-circle me-2 fs-7"></i>
+                    <span>
+                      {user.fullName?.split(" ")[0] || "User"}
+                    </span>
                   </button>
+
                   <ul className="dropdown-menu dropdown-menu-end">
                     <li>
-                      <Link className="dropdown-item" to="/profile">Profile</Link>
+                      <Link
+                        className="dropdown-item d-flex align-items-center"
+                        to="/profile"
+                      >
+                        <i className="bi bi-person-fill me-2"></i>
+                        Profile
+                      </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item" to="/your-posts">Your Posts</Link>
+                      <Link
+                        className="dropdown-item d-flex align-items-center"
+                        to="/your-posts"
+                      >
+                        <i className="bi bi-journal-text me-2"></i>
+                        Your Posts
+                      </Link>
                     </li>
-                    <li><hr className="dropdown-divider" /></li>
                     <li>
-                      <button className="dropdown-item" onClick={handleLogoutClick}>Logout</button>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item d-flex align-items-center text-danger"
+                        onClick={handleLogoutClick}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Logout
+                      </button>
                     </li>
                   </ul>
                 </li>
@@ -66,44 +119,16 @@ export default function Navbar() {
           </ul>
         </div>
       </div>
-      {showLogoutDialog && (
-        <div
-          className="modal fade show"
-          style={{ display: "block", background: "rgba(0,0,0,0.4)" }}
-          tabIndex={-1}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirm Logout</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowLogoutDialog(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p>
-                  Are you sure you want to <span className="fw-bold text-danger">logout</span>?
-                  <br />
-                  You will need to log in again to access your profile and posts.
-                </p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowLogoutDialog(false)}
-                >
-                  Cancel
-                </button>
-                <button className="btn btn-danger" onClick={confirmLogout}>
-                  Yes, Logout
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        show={showLogoutDialog}
+        title="Confirm Logout"
+        message="Are you sure you want to logout? You will need to log in again to access your profile and posts."
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutDialog(false)}
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        confirmVariant="danger"
+      />
     </nav>
   );
 }

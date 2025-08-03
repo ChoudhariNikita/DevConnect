@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { HiOutlineSparkles } from "react-icons/hi2";
+import { FaThumbsUp } from "react-icons/fa";
 
 export default function PostFeed() {
   const { user } = useAuth();
@@ -42,7 +44,9 @@ export default function PostFeed() {
 
   // Show all posts if not logged in, otherwise exclude own posts
   const visiblePosts = user
-    ? posts.filter((post) => post.author?._id !== user._id).slice(0, visibleCount)
+    ? posts
+        .filter((post) => post.author?._id !== user._id)
+        .slice(0, visibleCount)
     : posts.slice(0, visibleCount);
 
   return (
@@ -52,7 +56,20 @@ export default function PostFeed() {
         <div className="row justify-content-center">
           <div className="col-lg-8 col-md-10">
             {loading && <div>Loading posts...</div>}
-            {!loading &&
+            {!loading && visiblePosts.length === 0 ? (
+              <div className="text-center my-5">
+                <img
+                  src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130367-1800926.png"
+                  alt="No Posts"
+                  className="img-fluid mb-4"
+                  style={{ maxWidth: "300px" }}
+                />
+                <h5 className="text-muted">No posts to display</h5>
+                <p className="text-muted">
+                  Seems quiet here... Start a conversation or check back later!
+                </p>
+              </div>
+            ) : (
               visiblePosts.map((post) => (
                 <div key={post._id} className="card shadow-sm border-0 mb-4">
                   <div className="card-body p-4">
@@ -78,10 +95,14 @@ export default function PostFeed() {
                             undefined,
                             { year: "numeric", month: "long", day: "numeric" }
                           )}{" "}
-                          {new Date(post.createdAt).toLocaleTimeString(
-                            undefined,
-                            { hour: "numeric", minute: "2-digit" }
-                          )}
+                          {new Date(post.createdAt)
+                            .toLocaleTimeString(undefined, {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                            .replace("am", "AM")
+                            .replace("pm", "PM")}
                         </p>
                       </div>
                     </div>
@@ -95,22 +116,34 @@ export default function PostFeed() {
                       {/* Like Button Only */}
                       <div className="d-flex justify-content-start">
                         <button
-                          className={`btn btn-sm flex-fill me-1 ${
-                            post.liked ? "text-primary" : "text-muted"
+                          className={`btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill border ${
+                            post.liked
+                              ? "border-primary text-primary bg-light"
+                              : "border-light text-muted bg-white"
                           }`}
                           onClick={() => handleLike(post._id)}
+                          style={{ transition: "all 0.2s ease-in-out !important" }}
                         >
-                          <span className="me-2">👍</span> Like
+                          <FaThumbsUp
+                            className={`me-2 ${
+                              post.liked ? "text-primary" : "text-muted"
+                            }`}
+                            style={{ fontSize: "1rem" }}
+                          />
+                          <span className="fw-semibold">Like</span>
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
             {/* Load More */}
             {!loading && (
               <div className="text-center py-4">
-                {visibleCount < posts.length ? (
+                {visibleCount <
+                posts.filter((p) => !user || p.author?._id !== user._id)
+                  .length ? (
                   <button
                     className="btn btn-outline-primary"
                     onClick={() => setVisibleCount(visibleCount + 5)}
@@ -118,7 +151,12 @@ export default function PostFeed() {
                     Load more posts
                   </button>
                 ) : (
-                  <p className="text-muted">You're all caught up 🎉</p>
+                  posts.length > 0 && (
+                    <p className="text-muted d-flex justify-content-center align-items-center gap-2">
+                      <HiOutlineSparkles size={20} className="text-primary" />
+                      You're all caught up!
+                    </p>
+                  )
                 )}
               </div>
             )}

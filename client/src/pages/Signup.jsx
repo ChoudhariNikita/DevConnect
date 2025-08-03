@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -35,11 +36,13 @@ export default function Signup() {
       <nav className="navbar navbar-dark bg-primary">
         <div className="container">
           <Link className="navbar-brand fw-bold fs-3" to="/">
+          <i className="bi bi-linkedin me-2"></i>
             DevConnect
           </Link>
           <ul className="navbar-nav flex-row">
             <li className="nav-item">
               <Link className="nav-link text-white" to="/">
+                <i className="bi bi-house-fill me-2"></i>
                 Home
               </Link>
             </li>
@@ -98,6 +101,7 @@ export default function Signup() {
           </p>
         </div>
       </div>
+      <Footer/>
     </>
   );
 }

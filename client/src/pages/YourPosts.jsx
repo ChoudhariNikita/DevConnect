@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import Button from "../components/Button";
+import Footer from "../components/Footer";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function YourPosts() {
   const { user } = useAuth();
@@ -9,6 +12,8 @@ export default function YourPosts() {
   const [newPost, setNewPost] = useState("");
   const [editingPost, setEditingPost] = useState(null);
   const [editContent, setEditContent] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -56,10 +61,21 @@ export default function YourPosts() {
     setPosts(posts.filter((p) => p._id !== postId));
   };
 
+  const handleDeleteClick = (postId) => {
+    setPostToDelete(postId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    await handleDeletePost(postToDelete);
+    setShowDeleteDialog(false);
+    setPostToDelete(null);
+  };
+
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      <div className="container py-5">
+      <div className="container py-5 flex-grow-1">
         <div className="row justify-content-center">
           <div className="col-md-8">
             {/* Create Post */}
@@ -73,13 +89,14 @@ export default function YourPosts() {
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
                   />
-                  <button
+                  <Button
                     type="submit"
-                    className="btn btn-primary"
+                    variant="primary"
+                    className="w-100"
                     disabled={!newPost.trim()}
                   >
                     Post
-                  </button>
+                  </Button>
                 </form>
               </div>
             </div>
@@ -107,28 +124,35 @@ export default function YourPosts() {
                             undefined,
                             { year: "numeric", month: "long", day: "numeric" }
                           )}{" "}
-                          {new Date(post.createdAt).toLocaleTimeString(
-                            undefined,
-                            { hour: "numeric", minute: "2-digit" }
-                          )}
+                          {new Date(post.createdAt)
+                            .toLocaleTimeString(undefined, {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                            .replace("am", "AM")
+                            .replace("pm", "PM")}
                         </span>
                       </div>
                     </div>
                     <div>{post.content}</div>
                     {post.author === user._id && (
                       <div className="mt-2">
-                        <button
-                          className="btn btn-sm btn-outline-primary me-2"
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="me-2"
                           onClick={() => handleEdit(post)}
                         >
                           Edit
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeletePost(post._id)}
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDeleteClick(post._id)}
                         >
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     )}
                     {editingPost === post._id && (
@@ -139,27 +163,38 @@ export default function YourPosts() {
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                         />
-                        <button
+                        <Button
                           className="btn btn-sm btn-primary me-2"
                           onClick={() => handleUpdatePost(post._id)}
                         >
                           Update
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => setEditingPost(null)}
                         >
                           Cancel
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>
                 ))}
+                <ConfirmDialog
+                  show={showDeleteDialog}
+                  title="Delete Post"
+                  message="Are you sure you want to delete this post?"
+                  onConfirm={confirmDelete}
+                  onCancel={() => setShowDeleteDialog(false)}
+                  confirmText="Delete"
+                  cancelText="Cancel"
+                  confirmVariant="danger"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
