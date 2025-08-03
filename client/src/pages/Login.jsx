@@ -11,7 +11,8 @@ export default function Login() {
   });
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  const api = import.meta.env.VITE_API_URL;
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -21,7 +22,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`${api}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
