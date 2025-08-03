@@ -1,37 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
-
-const dummyPosts = [
-  {
-    id: 1,
-    content: "Excited to join DevConnect! Looking forward to connecting with fellow developers.",
-    createdAt: "2024-06-01",
-  },
-  {
-    id: 2,
-    content: "Just finished a cool React project. Happy to share and get feedback!",
-    createdAt: "2024-06-02",
-  },
-];
+import axios from "axios";
 
 export default function YourPosts() {
   const { user } = useAuth();
-  const [posts, setPosts] = useState(dummyPosts);
+  const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
+  const [editingPost, setEditingPost] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
-  const handleCreatePost = (e) => {
+  const token = localStorage.getItem("token");
+
+  // Fetch user's posts from backend
+  useEffect(() => {
+    axios
+      .get(`/api/users/${user._id}/posts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setPosts(res.data));
+  }, [user._id, token]);
+
+  const handleCreatePost = async (e) => {
     e.preventDefault();
     if (!newPost.trim()) return;
-    setPosts([
-      {
-        id: Date.now(),
-        content: newPost,
-        createdAt: new Date().toISOString().slice(0, 10),
-      },
-      ...posts,
-    ]);
+    const res = await axios.post(
+      "/api/posts/create",
+      { author: user._id, content: newPost },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setPosts([res.data, ...posts]);
     setNewPost("");
+  };
+
+  const handleEdit = (post) => {
+    setEditingPost(post._id);
+    setEditContent(post.content);
+  };
+
+  const handleUpdatePost = async (postId) => {
+    const res = await axios.put(
+      `/api/posts/${postId}`,
+      { content: editContent },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setPosts(posts.map((p) => (p._id === postId ? res.data : p)));
+    setEditingPost(null);
+    setEditContent("");
+  };
+
+  const handleDeletePost = async (postId) => {
+    await axios.delete(`/api/posts/${postId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setPosts(posts.filter((p) => p._id !== postId));
   };
 
   return (
@@ -69,7 +91,7 @@ export default function YourPosts() {
                   <p className="text-muted">You haven't posted anything yet.</p>
                 )}
                 {posts.map((post) => (
-                  <div key={post.id} className="mb-4 border-bottom pb-3">
+                  <div key={post._id} className="mb-4 border-bottom pb-3">
                     <div className="d-flex align-items-center mb-2">
                       <div
                         className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
@@ -79,10 +101,58 @@ export default function YourPosts() {
                       </div>
                       <div>
                         <span className="fw-bold">{user?.fullName}</span>
-                        <span className="text-muted ms-2 small">{post.createdAt}</span>
+                        <span className="text-muted ms-2 small">
+                          <br />
+                          {new Date(post.createdAt).toLocaleDateString(
+                            undefined,
+                            { year: "numeric", month: "long", day: "numeric" }
+                          )}{" "}
+                          {new Date(post.createdAt).toLocaleTimeString(
+                            undefined,
+                            { hour: "numeric", minute: "2-digit" }
+                          )}
+                        </span>
                       </div>
                     </div>
                     <div>{post.content}</div>
+                    {post.author === user._id && (
+                      <div className="mt-2">
+                        <button
+                          className="btn btn-sm btn-outline-primary me-2"
+                          onClick={() => handleEdit(post)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleDeletePost(post._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                    {editingPost === post._id && (
+                      <div className="mt-3">
+                        <textarea
+                          className="form-control mb-2"
+                          rows={2}
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                        />
+                        <button
+                          className="btn btn-sm btn-primary me-2"
+                          onClick={() => handleUpdatePost(post._id)}
+                        >
+                          Update
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => setEditingPost(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
