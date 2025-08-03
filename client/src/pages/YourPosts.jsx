@@ -5,6 +5,7 @@ import axios from "axios";
 import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ConfirmDialog from "../components/ConfirmDialog";
+import {showAlert} from "../components/CustomAlert";
 
 export default function YourPosts() {
   const { user } = useAuth();
@@ -26,17 +27,30 @@ export default function YourPosts() {
       .then((res) => setPosts(res.data));
   }, [user._id, token]);
 
-  const handleCreatePost = async (e) => {
-    e.preventDefault();
-    if (!newPost.trim()) return;
-    const res = await axios.post(
-      "/api/posts/create",
-      { author: user._id, content: newPost },
-      { headers: { Authorization: `Bearer ${token}` } }
+ const handleCreatePost = async (e) => {
+  e.preventDefault();
+  if (!newPost.trim()) return;
+
+  const res = await axios.post(
+    "/api/posts/create",
+    { author: user._id, content: newPost },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  const isFirstPost = posts.length === 0;
+
+  setPosts([res.data, ...posts]);
+  setNewPost("");
+
+  if (isFirstPost) {
+    showAlert(
+      "success",
+      "Yaaay !!🚀🎉",
+      "Your first post is live! Let the world know who you are!"
     );
-    setPosts([res.data, ...posts]);
-    setNewPost("");
-  };
+  }
+};
+
 
   const handleEdit = (post) => {
     setEditingPost(post._id);
@@ -70,6 +84,7 @@ export default function YourPosts() {
     await handleDeletePost(postToDelete);
     setShowDeleteDialog(false);
     setPostToDelete(null);
+    showAlert("success","Deleted","Your post has been removed successfully.");
   };
 
   return (

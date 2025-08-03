@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import {showAlert} from "../components/CustomAlert";
 
 export default function PostFeed() {
   const { user } = useAuth();

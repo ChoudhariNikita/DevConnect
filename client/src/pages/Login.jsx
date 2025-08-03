@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import Footer from "../components/Footer";
-import Swal from "sweetalert2";
+import { showAlert } from "../components/CustomAlert";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -11,21 +11,6 @@ export default function Login() {
   });
   const navigate = useNavigate();
   const { login } = useAuth();
-
-  // ✅ SweetAlert Helper Function
-  const showAlert = (type, title, text) => {
-    Swal.fire({
-      icon: type,
-      title,
-      text,
-      confirmButtonText: "OK",
-      confirmButtonColor: "#0a66c2", // LinkedIn blue
-      customClass: {
-        popup: "rounded-4 shadow",
-        confirmButton: "btn btn-primary px-4",
-      },
-    });
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,11 +36,20 @@ export default function Login() {
         login(data.user);
         navigate("/feed", { replace: true });
       } else {
-        showAlert("error", "Login Failed", data.message || "Please try again.");
+        showAlert(
+          "error",
+          "Login Failed 😕",
+          data.message ||
+            "We couldn't log you in. Please double-check your credentials."
+        );
       }
     } catch (error) {
       console.error("Login error:", error);
-      showAlert("error", "Login Failed", "An error occurred during login.");
+      showAlert(
+        "error",
+        "Oops! Something went wrong 💥",
+        "We hit a snag while logging you in. Try again in a bit?"
+      );
     }
   };
 

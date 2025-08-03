@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import ConfirmDialog from "../components/ConfirmDialog";
+import {showAlert} from "../components/CustomAlert";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -13,10 +14,10 @@ export default function Navbar() {
   };
 
   const confirmLogout = () => {
-    setShowLogoutDialog(false);
-    logout();
-    navigate("/login");
-  };
+  setShowLogoutDialog(false);
+  logout();
+  showAlert("success", "Logged out successfully 👋", "You will be redirected to the login page shortly.");
+};
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import {showAlert} from "../components/CustomAlert";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -23,11 +24,19 @@ export default function Signup() {
     try {
       const res = await axios.post("/api/auth/register", formData);
       console.log("Signup successful:", res.data);
-      showAlert("success", "Signup Successful", "Account created successfully!");
+      showAlert(
+      "success",
+      "Welcome Aboard 🚀",
+      "Signup successful — you're all set to log in and shine!"
+      );
       navigate("/login");
     } catch (err) {
       console.error(err);
-      showAlert("error", "Signup Failed", "An error occurred during signup.");
+      showAlert(
+      "error",
+      "Oops! 😓",
+      "Signup failed. Something went wrong — please try again."
+      );
     }
   };
 
