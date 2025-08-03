@@ -40,23 +40,28 @@ export default function Navbar() {
               </>
             )}
             {user && (
-              <li className="nav-item dropdown">
-                <button className="btn nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                  <span className="fw-bold">{user.fullName?.[0] || 'U'}</span>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="/profile">Profile</Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/your-posts">Your Posts</Link>
-                  </li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button className="dropdown-item" onClick={handleLogoutClick}>Logout</button>
-                  </li>
-                </ul>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/feed">Community Posts</Link>
+                </li>
+                <li className="nav-item dropdown">
+                  <button className="btn nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <span className="fw-bold">{user.fullName?.[0] || 'U'}</span>
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <Link className="dropdown-item" to="/profile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/your-posts">Your Posts</Link>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button className="dropdown-item" onClick={handleLogoutClick}>Logout</button>
+                    </li>
+                  </ul>
+                </li>
+              </>
             )}
           </ul>
         </div>

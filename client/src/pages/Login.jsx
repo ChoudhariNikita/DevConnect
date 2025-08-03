@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../AuthContext";
+import { useAuth } from "../AuthContext";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -9,7 +9,7 @@ export default function Login() {
     password: "",
   });
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,9 +54,15 @@ export default function Login() {
           <Link className="navbar-brand fw-bold fs-3" to="/">
             DevConnect
           </Link>
+          <ul className="navbar-nav flex-row">
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/">
+                Home
+              </Link>
+            </li>
+          </ul>
         </div>
       </nav>
-
       <div
         className="container d-flex justify-content-center align-items-center"
         style={{ minHeight: "100vh" }}

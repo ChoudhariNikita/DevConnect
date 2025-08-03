@@ -32,14 +32,20 @@ export default function Signup() {
 
   return (
     <>
-      <nav className="navbar navbar-dark bg-primary shadow">
+      <nav className="navbar navbar-dark bg-primary">
         <div className="container">
           <Link className="navbar-brand fw-bold fs-3" to="/">
             DevConnect
           </Link>
+          <ul className="navbar-nav flex-row">
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/">
+                Home
+              </Link>
+            </li>
+          </ul>
         </div>
       </nav>
-
       <div
         className="container d-flex justify-content-center align-items-center"
         style={{ minHeight: "90vh" }}
