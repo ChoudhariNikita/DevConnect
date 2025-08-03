@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import {showAlert} from "../components/CustomAlert";
+import { showAlert } from "../components/CustomAlert";
+import Footer from "../components/Footer";
 
 export default function PostFeed() {
   const { user } = useAuth();
@@ -34,7 +35,11 @@ export default function PostFeed() {
       );
     } catch (error) {
       console.error("Error liking post:", error);
-      showAlert("info", "Like Failed", "You need to login before you can like a post!");
+      showAlert(
+        "info",
+        "Like Failed",
+        "You need to login before you can like a post!"
+      );
     }
   };
 
@@ -46,9 +51,9 @@ export default function PostFeed() {
     : posts.slice(0, visibleCount);
 
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      <div className="container py-4">
+      <div className="container py-4 flex-grow-1">
         <div className="row justify-content-center">
           <div className="col-lg-8 col-md-10">
             {loading && <div>Loading posts...</div>}
@@ -83,7 +88,12 @@ export default function PostFeed() {
                       </div>
                       <div className="flex-grow-1">
                         <h6 className="mb-0 fw-bold">
-                          {post.author?.fullName || "Unknown"}
+                          <a
+                            href={`/user/${post.author?._id}`}
+                            className="text-decoration-none text-primary"
+                          >
+                            {post.author?.fullName || "Unknown"}
+                          </a>
                         </h6>
                         <p className="mb-0 text-muted small">
                           Posted on{" "}
@@ -121,7 +131,9 @@ export default function PostFeed() {
                           }`}
                           onClick={() => handleLike(post._id)}
                           title={
-                            !user ? "Please login to like posts" : "Like this post"
+                            !user
+                              ? "Please login to like posts"
+                              : "Like this post"
                           }
                         >
                           <i
@@ -167,6 +179,7 @@ export default function PostFeed() {
           </div>
         </div>
       </div>
-    </>
+      <Footer/>
+    </div>
   );
 }

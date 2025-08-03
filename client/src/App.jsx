@@ -7,6 +7,7 @@ import PostFeed from './pages/PostFeed';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './pages/Profile';
 import YourPosts from './pages/YourPosts';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <YourPosts />
           </ProtectedRoute>
         } />
+        <Route path="/user/:id" element={<UserProfile />} />
       </Routes>
     </Router>
   );
