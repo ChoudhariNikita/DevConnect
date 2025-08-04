@@ -10,8 +10,10 @@ export default function PostFeed() {
   const [posts, setPosts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(5);
   const [loading, setLoading] = useState(true);
-  
+
   const api = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios.get(`${api}/api/posts`).then((res) => {
       setPosts(res.data.reverse()); // newest first
@@ -41,6 +43,23 @@ export default function PostFeed() {
         "Like Failed",
         "You need to login before you can like a post!"
       );
+    }
+  };
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user profile");
+      }
+      navigate(`/user/${userId}`);
+    } catch (error) {
+      console.error(error);
+      showAlert("error", "Failed to load profile", error.message);
     }
   };
 
@@ -90,7 +109,11 @@ export default function PostFeed() {
                       <div className="flex-grow-1">
                         <h6 className="mb-0 fw-bold">
                           <a
-                            href={`/user/${post.author?._id}`}
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault(); 
+                              fetchUserProfile(post.author._id);
+                            }}
                             className="text-decoration-none text-primary"
                           >
                             {post.author?.fullName || "Unknown"}
@@ -180,7 +203,7 @@ export default function PostFeed() {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
