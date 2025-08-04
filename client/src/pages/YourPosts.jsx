@@ -5,7 +5,7 @@ import axios from "axios";
 import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ConfirmDialog from "../components/ConfirmDialog";
-import {showAlert} from "../components/CustomAlert";
+import { showAlert } from "../components/CustomAlert";
 
 export default function YourPosts() {
   const { user } = useAuth();
@@ -28,30 +28,37 @@ export default function YourPosts() {
       .then((res) => setPosts(res.data));
   }, [user._id, token]);
 
- const handleCreatePost = async (e) => {
-  e.preventDefault();
-  if (!newPost.trim()) return;
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    if (!newPost.trim()) return;
 
-  const res = await axios.post(
-    `${api}/api/posts/create`,
-    { author: user._id, content: newPost },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+    try {
+      const res = await axios.post(
+        `${api}/api/posts/create`,
+        { author: user._id, content: newPost },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-  const isFirstPost = posts.length === 0;
+      const isFirstPost = posts.length === 0;
 
-  setPosts([res.data, ...posts]);
-  setNewPost("");
+      setPosts([res.data, ...posts]);
+      setNewPost("");
 
-  if (isFirstPost) {
-    showAlert(
-      "success",
-      "Yaaay !!🚀🎉",
-      "Your first post is live! Let the world know who you are!"
-    );
-  }
-};
-
+      if (isFirstPost) {
+        showAlert(
+          "success",
+          "Yaaay !!🚀🎉",
+          "Your first post is live! Let the world know who you are!"
+        );
+      }
+    } catch (err) {
+      showAlert(
+        "error",
+        "Post Failed",
+        err.response?.data?.msg || "Couldn't create post."
+      );
+    }
+  };
 
   const handleEdit = (post) => {
     setEditingPost(post._id);
@@ -59,21 +66,39 @@ export default function YourPosts() {
   };
 
   const handleUpdatePost = async (postId) => {
-    const res = await axios.put(
-      `${api}/api/posts/${postId}`,
-      { content: editContent },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setPosts(posts.map((p) => (p._id === postId ? res.data : p)));
-    setEditingPost(null);
-    setEditContent("");
+    try {
+      const res = await axios.put(
+        `${api}/api/posts/${postId}`,
+        { content: editContent },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setPosts(posts.map((p) => (p._id === postId ? res.data : p)));
+      setEditingPost(null);
+      setEditContent("");
+      showAlert("success", "Update Successful", "Your post has been updated!");
+    } catch (err) {
+      showAlert(
+        "error",
+        "Update Failed",
+        err.response?.data?.msg || "Couldn't update post."
+      );
+    }
   };
 
   const handleDeletePost = async (postId) => {
-    await axios.delete(`${api}/api/posts/${postId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setPosts(posts.filter((p) => p._id !== postId));
+    try {
+      await axios.delete(`${api}/api/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPosts(posts.filter((p) => p._id !== postId));
+      showAlert("success", "Deleted!", "Your post has been deleted.");
+    } catch (err) {
+      showAlert(
+        "error",
+        "Delete Failed",
+        err.response?.data?.msg || "Couldn't delete post."
+      );
+    }
   };
 
   const handleDeleteClick = (postId) => {
@@ -85,7 +110,6 @@ export default function YourPosts() {
     await handleDeletePost(postToDelete);
     setShowDeleteDialog(false);
     setPostToDelete(null);
-    showAlert("success","Deleted","Your post has been removed successfully.");
   };
 
   return (
@@ -110,7 +134,7 @@ export default function YourPosts() {
                     variant="primary"
                     className="w-100 d-flex justify-content-center align-items-center gap-2"
                     disabled={!newPost.trim()}
-                  >                    
+                  >
                     Post <i className="bi bi-send-fill"></i>
                   </Button>
                 </form>
@@ -230,7 +254,6 @@ export default function YourPosts() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

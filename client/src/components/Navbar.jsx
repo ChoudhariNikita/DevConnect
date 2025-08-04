@@ -6,7 +6,6 @@ import {showAlert} from "../components/CustomAlert";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleLogoutClick = () => {
