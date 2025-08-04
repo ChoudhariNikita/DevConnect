@@ -37,20 +37,12 @@ export default function Login() {
         login(data.user);
         navigate("/feed", { replace: true });
       } else {
-        showAlert(
-          "error",
-          "Login Failed 😕",
-          data.message ||
-            "We couldn't log you in. Please double-check your credentials."
-        );
+        showAlert("error", "Login Failed", data.msg || data.error || "Something went wrong!");
+        console.error("Login error:", data);
       }
     } catch (error) {
       console.error("Login error:", error);
-      showAlert(
-        "error",
-        "Oops! Something went wrong 💥",
-        "We hit a snag while logging you in. Try again in a bit?"
-      );
+      showAlert("error", "Login Failed", data.msg || data.error || "Something went wrong!");
     }
   };
 

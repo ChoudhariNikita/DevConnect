@@ -33,11 +33,7 @@ export default function Signup() {
       navigate("/login");
     } catch (err) {
       console.error(err);
-      showAlert(
-      "error",
-      "Oops! 😓",
-      "Signup failed. Something went wrong — please try again."
-      );
+      showAlert("error", "Signup Failed", data.msg || data.error || "Unable to register. Try again!");
     }
   };
 

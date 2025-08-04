@@ -53,16 +53,20 @@ export default function Profile() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setProfile(res.data);
+      setProfile(res.data.user || res.data); // support if backend sends {msg, user}
       showAlert(
         "success",
         "Profile Updated",
-        "Your changes were saved successfully."
+        res.data.msg || "Your changes were saved successfully."
       );
       setEditMode(false);
     } catch (err) {
       console.error("Update error:", err);
-      showAlert("error", "Update Failed", "Please try again later.");
+      const errorMessage =
+        err.response?.data?.msg ||
+        err.response?.data?.error ||
+        "Please try again later.";
+      showAlert("error", "Update Failed", errorMessage);
     }
   };
 
@@ -145,7 +149,10 @@ export default function Profile() {
 
                 {editMode && (
                   <div className="d-flex justify-content-start mt-4 gap-2">
-                    <button className="btn btn-outline-primary" onClick={handleSave}>
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={handleSave}
+                    >
                       <i className="bi bi-save me-1"></i>
                       Save
                     </button>
@@ -163,7 +170,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
