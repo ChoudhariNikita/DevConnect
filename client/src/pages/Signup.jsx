@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
-import {showAlert} from "../components/CustomAlert";
+import { showAlert } from "../components/CustomAlert";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -23,17 +23,31 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${api}/api/auth/register`, formData);
-      console.log("Signup successful:", res.data);
-      showAlert(
-      "success",
-      "Welcome Aboard 🚀",
-      "Signup successful — you're all set to log in and shine!"
-      );
-      navigate("/login");
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        showAlert("success", "Signup Successful", "You can login now.");
+        navigate("/login");
+      } else {
+        showAlert(
+          "error",
+          "Signup Failed",
+          data.msg || data.error || "Unable to register. Try again!"
+        );
+      }
     } catch (err) {
-      console.error(err);
-      showAlert("error", "Signup Failed", data.msg || data.error || "Unable to register. Try again!");
+      showAlert(
+        "error",
+        "Signup Failed",
+        "Something went wrong. Please try again later."
+      );
+      console.error("Signup error:", err);
     }
   };
 
@@ -42,7 +56,7 @@ export default function Signup() {
       <nav className="navbar navbar-dark bg-primary">
         <div className="container">
           <Link className="navbar-brand fw-bold fs-3" to="/">
-          <i className="bi bi-linkedin me-2"></i>
+            <i className="bi bi-linkedin me-2"></i>
             DevConnect
           </Link>
           <ul className="navbar-nav flex-row">
@@ -107,7 +121,7 @@ export default function Signup() {
           </p>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
